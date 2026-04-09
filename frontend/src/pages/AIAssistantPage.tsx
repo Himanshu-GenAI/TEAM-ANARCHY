@@ -49,7 +49,7 @@ function buildContext(
 
   return `
 Student: ${userName}
-Course: B.Tech AIML, Semester 4
+Course: B.Tech, Semester 4
 Overall Attendance: ${(subjects.reduce((s, sub) => s + getAttendancePercentage(sub), 0) / subjects.length).toFixed(1)}%
 Subjects & Attendance: ${subjectStr}
 Pending Assignments: ${pendingStr || 'None'}
@@ -68,7 +68,7 @@ export default function AIAssistantPage() {
     {
       id: 'welcome',
       role: 'assistant',
-      content: `Hey ${user?.name?.split(' ')[0] || 'there'}! 👋 I'm your UniSync AI assistant powered by Gemini.\n\nI can see your academic data and help you with:\n• Today's study plan\n• Risk assessment\n• Priority recommendations\n• Motivational advice\n\nWhat's on your mind?`,
+      content: `Hey ${user?.name?.split(' ')[0] || 'there'}! 👋 I'm your UniSync AI assistant powered by Groq.\n\nI can see your academic data and help you with:\n• Today's study plan\n• Risk assessment\n• Priority recommendations\n• Motivational advice\n\nWhat's on your mind?`,
       timestamp: new Date(),
     },
   ]);
@@ -149,24 +149,33 @@ export default function AIAssistantPage() {
         }),
       });
 
+      let data;
+      try {
+        data = await response.json();
+      } catch (e) {
+        // failed to parse json
+      }
+
       if (!response.ok) {
+        if (data && data.error) {
+           throw new Error(data.error);
+        }
         throw new Error(`Server responded with ${response.status}`);
       }
 
-      const data = await response.json();
       const aiMsg: Message = {
         id: `ai_${Date.now()}`,
         role: 'assistant',
-        content: data.reply || "Sorry, I couldn't generate a response. Please check your Gemini API key.",
+        content: data.reply || "Sorry, I couldn't generate a response. Please check your Groq API key.",
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, aiMsg]);
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : 'Unknown error';
       setError(
-        errMsg.includes('500') || errMsg.includes('fetch')
-          ? '⚠️ API server not running. Start it with: node server/index.js\nMake sure GEMINI_API_KEY is set in .env'
-          : `Error: ${errMsg}`
+        errMsg === 'Failed to fetch' || errMsg.includes('Load failed')
+          ? '⚠️ API server not running. Start it with: npm run dev:backend\nMake sure GROQ_API_KEY is set in .env'
+          : `⚠️ AI Error: ${errMsg}`
       );
     } finally {
       setLoading(false);
@@ -216,7 +225,7 @@ export default function AIAssistantPage() {
             <h1 className="page-title" style={{ fontSize: '1.4rem' }}>
               AI Assistant
             </h1>
-            <p className="page-subtitle">Powered by Google Gemini</p>
+            <p className="page-subtitle">Powered by Groq Llama 3</p>
           </div>
         </div>
         <button className="btn-icon" onClick={clearChat} title="Clear chat">

@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import Groq from 'groq-sdk';
 
 // DB + Routes
 import connectDB from './config/db.js';
@@ -34,7 +34,7 @@ app.use('/api/student', studentRoutes);
 // Health Check
 // ──────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', apiKey: !!process.env.GEMINI_API_KEY });
+  res.json({ status: 'ok', apiKey: !!process.env.GROQ_API_KEY });
 });
 
 // ──────────────────────────────────────────────
@@ -42,22 +42,25 @@ app.get('/api/health', (req, res) => {
 // ──────────────────────────────────────────────
 app.post('/api/chat', async (req, res) => {
   const { message, studentContext } = req.body;
+  console.log(`\n💬 Received chat request: "${message?.substring(0, 30)}..."`);
 
   if (!message) {
+    console.error('❌ Chat error: Message is required');
     return res.status(400).json({ error: 'Message is required' });
   }
 
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey || apiKey === 'your_gemini_api_key_here') {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey || apiKey === 'your_groq_api_key_here') {
+    console.error('❌ Chat error: GROQ_API_KEY missing');
     return res.status(500).json({
-      error: 'GEMINI_API_KEY not configured.',
-      reply: "⚠️ I'm not connected yet! Please add your Gemini API key to the `.env` file.",
+      error: 'GROQ_API_KEY not configured.',
+      reply: "⚠️ I'm not connected yet! Please add your Groq API key to the `.env` file.",
     });
   }
 
   try {
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    console.log('🤖 Initializing Groq...');
+    const groq = new Groq({ apiKey });
 
     const systemPrompt = `You are UniSync AI, a friendly and intelligent academic assistant for college students. 
 You have access to the student's real-time academic data.
@@ -71,25 +74,21 @@ Your responses should be:
 STUDENT DATA:
 ${studentContext}`;
 
-    const chat = model.startChat({
-      history: [
-        {
-          role: 'user',
-          parts: [{ text: 'System context: ' + systemPrompt }],
-        },
-        {
-          role: 'model',
-          parts: [{ text: "Got it! I have full context on this student's academic data. Ready to help! 🎓" }],
-        },
+    console.log('✉️ Sending message to Groq...');
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: message }
       ],
+      model: 'llama-3.3-70b-versatile',
     });
 
-    const result = await chat.sendMessage(message);
-    const text = result.response.text();
+    const text = chatCompletion.choices[0]?.message?.content || "No response received.";
+    console.log('✅ Response received from Groq');
 
     res.json({ reply: text });
   } catch (err) {
-    console.error('Gemini API error:', err);
+    console.error('❌ Groq API error:', err);
     const errorMsg = err instanceof Error ? err.message : 'Unknown error';
     res.status(500).json({
       error: errorMsg,
@@ -111,7 +110,7 @@ app.use((req, res) => {
 app.listen(PORT, () => {
   console.log(`\n🚀 UniSync AI Server running at http://localhost:${PORT}`);
   console.log(`🗄️  MongoDB: ${process.env.MONGODB_URI ? '✅ URI set' : '❌ Missing MONGODB_URI in .env'}`);
-  console.log(`📊 Gemini API Key: ${process.env.GEMINI_API_KEY ? '✅ Configured' : '❌ Missing'}`);
+  console.log(`📊 Groq API Key: ${process.env.GROQ_API_KEY ? '✅ Configured' : '❌ Missing'}`);
   console.log(`\n📌 Available Endpoints:`);
   console.log(`   POST   /api/university/register`);
   console.log(`   GET    /api/university/:id/students`);

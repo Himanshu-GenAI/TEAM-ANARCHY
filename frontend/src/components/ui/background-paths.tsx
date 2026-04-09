@@ -192,7 +192,7 @@ export function BackgroundPaths({ title = "UniSync AI" }: { title?: string }) {
         transition={{ delay: 1.8 }}
         className="absolute bottom-6 text-xs text-neutral-600 font-mono tracking-wider"
       >
-        B.Tech AIML · UniSync AI v2.0
+        UniSync AI v2.0
       </motion.p>
     </div>
   );

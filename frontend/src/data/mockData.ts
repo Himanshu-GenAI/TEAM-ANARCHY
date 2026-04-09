@@ -1,6 +1,6 @@
 // ============================================================
 // Mock Data Layer — UniSync AI
-// Pre-filled with demo student data (Dhruv Bhardwaj, B.Tech AIML)
+// Pre-filled with demo student data (Dhruv Bhardwaj)
 // ============================================================
 
 export type UserRole = 'student' | 'admin';
@@ -20,7 +20,7 @@ export const STUDENT_PROFILE = {
   id: 'student_001',
   name: 'Dhruv Bhardwaj',
   email: 'dhruv@unisync.ai',
-  course: 'B.Tech AIML',
+  course: 'B.Tech',
   semester: 4,
   rollNumber: '22BTAIML042',
   avatar: 'DB',
@@ -348,7 +348,7 @@ export const MOCK_ALL_STUDENTS = [
     id: 'student_004',
     name: 'Aisha Patel',
     email: 'aisha.p@tech.edu',
-    course: 'B.Tech AIML',
+    course: 'B.Tech',
     semester: 4,
     rollNumber: '22BTAIML043',
     avatar: 'AP',
