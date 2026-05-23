@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
+import { Button } from "./button";
 import { useNavigate } from "react-router-dom";
 import { GraduationCap, ArrowRight, BookOpen, Brain, Users } from "lucide-react";
 
