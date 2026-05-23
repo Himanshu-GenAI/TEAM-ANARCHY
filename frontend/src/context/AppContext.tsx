@@ -17,7 +17,7 @@ import {
   GAMIFICATION,
   INITIAL_NOTIFICATIONS,
 } from '../data/mockData';
-import type { Subject, Assignment, PlannerTask, Notification, Announcement, UserRole, University } from '../data/mockData';
+import type { Subject, Assignment, PlannerTask, Notification, Announcement, UserRole } from '../data/mockData';
 import { generateNotifications } from '../utils/notifications';
 
 interface User {
