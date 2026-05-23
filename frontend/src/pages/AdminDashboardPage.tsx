@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { Users, AlertTriangle, Send, Bell, Hash, RefreshCw, UserCheck, BookOpen } from 'lucide-react';
+import { Users, Send, Bell, Hash, RefreshCw, UserCheck, BookOpen } from 'lucide-react';
 
 interface RealStudent {
   _id: string;
