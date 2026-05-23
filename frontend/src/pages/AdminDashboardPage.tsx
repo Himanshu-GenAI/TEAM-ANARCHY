@@ -135,7 +135,7 @@ export default function AdminDashboardPage() {
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 400, overflowY: 'auto' }}>
-              {recentStudents.map((s, i) => (
+              {recentStudents.map((s) => (
                 <div key={s._id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', background: 'var(--glass)', borderRadius: 10, border: '1px solid var(--border)' }}>
                   <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'var(--gradient-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700, fontSize: '0.8rem', flexShrink: 0 }}>
                     {s.name.slice(0, 2).toUpperCase()}
