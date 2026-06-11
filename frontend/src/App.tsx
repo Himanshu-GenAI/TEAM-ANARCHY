@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import { AppProvider, useApp } from './context/AppContext';
 import Sidebar from './components/Sidebar';
 import AuthPage from './pages/AuthPage';
@@ -94,6 +95,7 @@ export default function App() {
     <BrowserRouter>
       <AppProvider>
         <AppRoutes />
+        <Analytics />
       </AppProvider>
     </BrowserRouter>
   );
